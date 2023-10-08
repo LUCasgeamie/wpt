@@ -15,5 +15,4 @@ def main(request, response):
     response.status = status
 
     location = request.GET.first(b"location")
-
     response.headers.set(b"Location", location)
