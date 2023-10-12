@@ -35,9 +35,8 @@ parallelPromiseTest(async t => {
 
   // Creates a fetchLater request with short timeout. It should be sent out
   // even if the document is then put into BFCache.
-  // only be sent on page discarded (not on entering BFCache).
   await rc1.executeScript(url => {
-    fetchLater(url, {activationTimeout: 1000});  // 1.
+    fetchLater(url, {activationTimeout: 1000});  // 1s
     // Add a pageshow listener to stash the BFCache event.
     window.addEventListener('pageshow', e => {
       window.pageshowEvent = e;
