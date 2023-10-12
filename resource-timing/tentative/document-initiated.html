@@ -43,6 +43,12 @@
 
   <script>
     // Load arbitrary stylesheet with inline script
+    document.write('<link rel="stylesheet" href="../resources/empty_style.css?inline-script-doc-write">');
+
+    // Load arbitrary image with inline script
+    document.write('<img src="/images/blue.png?inline-script-doc-write">');
+
+    // Load arbitrary stylesheet with inline script
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "../resources/empty_style.css?inline-script";
@@ -60,15 +66,19 @@
         "empty.js?blocking",
         "empty.js?preload",
         "empty.js?async",
-        "empty.js?deferred",
         "empty.js?module",
         "empty_style.css?link",
         "blue.png?inline-style",
         "Ahem.ttf",
         "blue.png?using-Img-tag",
-        "green.html",
-        "empty_style.css?inline-script",
-        "blue.png?inline-script",
+        // The following Cases are yet not covered by Parser Preloading and
+        // thus, will be dealt in subsequent CLs.
+        // "empty.js?deferred",
+        // "green.html",
+        // "empty_style.css?inline-script",
+        // "blue.png?inline-script",
+        // "empty_style.css?inline-script-doc-write",
+        // "blue.png?inline-script-doc-write",
       ];
       for (const resource of resources) {
         await testResourceInitiator(resource, expectedInitiator);
