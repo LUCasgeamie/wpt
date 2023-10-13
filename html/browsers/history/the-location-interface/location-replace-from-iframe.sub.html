@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Referer and location.replace</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <iframe src="/resources/blank.html" hidden></iframe>
+    <script>
+      window.addEventListener('message', function(event) {
+          const referrer = event.data;
+          test(function () {
+              assert_equals(referrer, window.location.href);
+          }, "Browser sends Referer header in iframe request when location.replace is called from an iframe");
+      });
+      document.querySelector("iframe").contentWindow.location.replace("resources/iframe-contents.sub.html");
+    </script>
+  </body>
+</html>
