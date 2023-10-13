@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="author" title="Keith Cirkel" href="mailto:keithamus@github.com" />
+<link rel="help" href="https://open-ui.org/components/invokers.explainer/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/invoker-utils.js"></script>
+
+<div id="invokee"></div>
+<button id="invokerbutton" invoketarget="invokee"></button>
+
+<script>
+  test(function (t) {
+    let event = null;
+    invokee.addEventListener("invoke", (e) => (event = e), { once: true });
+    clickOn(invokerbutton);
+    assert_true(event instanceof InvokeEvent, "event is InvokeEvent");
+    assert_equals(event.type, "invoke", "type");
+    assert_equals(event.bubbles, false, "bubbles");
+    assert_equals(event.composed, false, "composed");
+    assert_equals(event.isTrusted, true, "isTrusted");
+    assert_equals(event.action, "auto", "action");
+    assert_equals(event.target, invokee, "target");
+    assert_equals(event.relatedTarget, invokerbutton);
+  }, "event dispatches on click");
+
+  test(function (t) {
+    let event = null;
+    invokee.addEventListener("invoke", (e) => (event = e), { once: true });
+    invokerbutton.invokeAction = "fooBar";
+    clickOn(invokerbutton);
+    assert_true(event instanceof InvokeEvent, "event is InvokeEvent");
+    assert_equals(event.type, "invoke", "type");
+    assert_equals(event.bubbles, false, "bubbles");
+    assert_equals(event.composed, false, "composed");
+    assert_equals(event.isTrusted, true, "isTrusted");
+    assert_equals(event.action, "fooBar", "action");
+  }, "event action is set to invokeAction");
+
+  test(function (t) {
+    let event = null;
+    invokee.addEventListener("invoke", (e) => (event = e), { once: true });
+    invokerbutton.setAttribute("invokeaction", "BaRbAz");
+    clickOn(invokerbutton);
+    assert_true(event instanceof InvokeEvent, "event is InvokeEvent");
+    assert_equals(event.type, "invoke", "type");
+    assert_equals(event.bubbles, false, "bubbles");
+    assert_equals(event.composed, false, "composed");
+    assert_equals(event.isTrusted, true, "isTrusted");
+    assert_equals(event.action, "BaRbAz", "action");
+  }, "event action is set to invokeaction attribute");
+
+  test(function (t) {
+    let called = false;
+    invokerbutton.addEventListener(
+      "click",
+      (event) => {
+        event.preventDefault();
+      },
+      { once: true },
+    );
+    invokee.addEventListener(
+      "invoke",
+      (event) => {
+        called = true;
+      },
+      { once: true },
+    );
+    clickOn(invokerbutton);
+    assert_false(called, "event was not called");
+  }, "event does not dispatch if click:preventDefault is called");
+
+  test(function (t) {
+    let called = false;
+    invokee.addEventListener(
+      "invoke",
+      (event) => {
+        called = true;
+      },
+      { once: true },
+    );
+    invokerbutton.setAttribute("disabled", "");
+    clickOn(invokerbutton);
+    assert_false(called, "event was not called");
+  }, "event does not dispatch if invoker is disabled");
+</script>
