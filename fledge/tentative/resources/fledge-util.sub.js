@@ -59,6 +59,11 @@ function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) 
   return createTrackerURL(origin, uuid, `track_post`, `seller_beacon_${id}`);
 }
 
+function createDirectFromSellerSignalsURL() {
+  let url = new URL(`${origin}${BASE_PATH}resources/direct-from-seller-signals.py`);
+  return url.toString();
+}
+
 // Generates a UUID and registers a cleanup method with the test fixture to
 // request a URL from the request tracking script that clears all data
 // associated with the generated uuid when requested.
@@ -338,10 +343,13 @@ async function joinGroupAndRunBasicFledgeTestExpectingNoWinner(test, testConfig 
 // `renderURLOverride` allows the ad URL of the joined InterestGroup to
 // to be set by the caller.
 //
+// `directFromSellerSignalsHeaderAdSlot` is an optional parameter to pass in
+// `adSlot` name for header-based `directFromSellerSignals` tests.
+//
 // Requesting error report URLs causes waitForObservedRequests() to throw
 // rather than hang.
 async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
-                             renderURLOverride) {
+  renderURLOverride, directFromSellerSignalsHeaderAdSlot) {
   let scoreAd = codeToInsert.scoreAd;
   let reportResultSuccessCondition = codeToInsert.reportResultSuccessCondition;
   let reportResult = codeToInsert.reportResult;
@@ -391,9 +399,13 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
     interestGroupOverrides.ads = [{ renderURL: renderURLOverride }]
 
   await joinInterestGroup(test, uuid, interestGroupOverrides);
-  await runBasicFledgeAuctionAndNavigate(
-      test, uuid,
-      { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) });
+
+  let auctionConfigOverrides =
+    { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) };
+  if (directFromSellerSignalsHeaderAdSlot)
+    auctionConfigOverrides.directFromSellerSignalsHeaderAdSlot = directFromSellerSignalsHeaderAdSlot
+
+  await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   await waitForObservedRequests(uuid, expectedReportURLs);
 }
 
