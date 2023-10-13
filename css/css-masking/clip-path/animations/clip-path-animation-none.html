@@ -19,7 +19,7 @@
   }
 
   .target {
-    animation: clippath 100000s infinite -50000s;
+    animation: clippath 1000000s steps(2) -499999.992s;
     background-color: blue;
     width: 100px;
     height: 100px;
@@ -46,7 +46,9 @@
   </div>
   <script>
     document.getAnimations()[0].ready.then(() => {
-      takeScreenshot();
+      window.requestAnimationFrame(() => {
+        takeScreenshot();
+      });
     });
   </script>
 </body>

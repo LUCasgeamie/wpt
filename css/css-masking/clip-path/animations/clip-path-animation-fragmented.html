@@ -21,10 +21,9 @@
 
   .inner {
     background-color: blue;
-    animation: clippath 1000000s cubic-bezier(0, 1, 1, 0) -500000s;
+    animation: clippath 1000000s steps(2) -499999.992s;
     height: 100px;
   }
-
 </style>
 <script src="/common/reftest-wait.js"></script>
 
@@ -35,7 +34,11 @@
   </div>
 
   <script>
-    takeScreenshot();
+    document.getAnimations()[0].ready.then(() => {
+      window.requestAnimationFrame(() => {
+        takeScreenshot();
+      });
+    });
   </script>
 </body>
 
